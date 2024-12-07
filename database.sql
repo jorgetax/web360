@@ -1,5 +1,6 @@
 -- Aspirante: GDA00380-OT
 -- GitHub: https://github.com/jorgetax/web360.git
+-- Licencia: MIT - https://github.com/jorgetax/web360?tab=BSD-2-Clause-1-ov-file
 -- Gestor de base de datos: SQL Server 2022 Developer
 -- Fecha: 02/12/2024
 

@@ -1,18 +1,24 @@
-<h1 style="text-align: center">Mi tiendita online</h1>
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/jorgetax/web360?tab=BSD-2-Clause-1-ov-file#readme)
 
-"MI TIENDITA ONLINE", dicha empresa se encuentra expandiendo sus
-operaciones y requiere un sistema en donde sus clientes puedan ingresar a
-comprar sus productos (Artículos de consumo diario), así como gestionar las
-entregas de sus pedidos.
+# Tienda en línea
 
-### Proyecto
+Este proyecto es un sistema de ventas en línea, donde los usuarios pueden registrarse, iniciar sesión, ver productos,
+agregar productos al carrito, realizar pedidos y ver el historial de pedidos.
+
+## Tecnologías
+
+- Node.js
+- Express
+- React
+- SQL Server
+
+## Proyecto
 
 - [`database.sql`](database.sql) script de la base de datos.
 
 ```text
 .
-|-- .gitignore
-|-- compose.yaml    
+|-- .gitignore 
 |-- database.sql
 |-- README.md
 ```
