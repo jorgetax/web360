@@ -5,10 +5,6 @@ package-lock.json
 # local env files
 .env
 
-# database
-/.mssql
-
-# ide
+# idea
 /.idea
 *.iml
-

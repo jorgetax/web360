@@ -1,0 +1,15 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    hostname: mssql
+    restart: always
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Password123"
+      MSSQL_PID: "Developer"
+    volumes:
+      - ./.mssql:/var/opt/mssql/data
+      - ./.mssql:/var/opt/mssql/log
+      - ./.mssql:/var/opt/mssql/secrets

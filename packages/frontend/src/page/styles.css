@@ -1,0 +1,24 @@
+/* page styles */
+.page {
+  display: flex;
+  align-items: center;
+  max-width: 1200px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.form {
+  display: flex;
+  min-width: 350px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.wrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin: auto 0;
+  gap: 10px;
+}
