@@ -5,7 +5,7 @@ import CategoryDto from './category.dto.js'
 async function create(req, res) {
   try {
     const category = CategoryDto.build(req)
-    const product = await CategoryModel.create(category)
+    const product = await CategoryModel.create(category.data)
 
     res.status(201).json(product)
   } catch (e) {
@@ -26,7 +26,7 @@ async function category(req, res) {
 async function update(req, res) {
   try {
     const category = CategoryDto.category(req)
-    const product = await CategoryModel.update(category)
+    const product = await CategoryModel.update(category.data)
 
     res.status(200).json(product)
   } catch (e) {

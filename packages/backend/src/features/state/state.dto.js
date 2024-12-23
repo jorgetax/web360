@@ -1,36 +1,35 @@
 import {CustomError} from '../../lib/custom-error.js'
-import {EveryObject, IsEmpty, TestUUID} from '../../lib/check/index.js'
+import {allOf, includeKey, isExists, isNotAdditionalKey, isNotEmpty, isString, isUUID} from '../../lib/check/index.js'
+import validate from '../../lib/validate.js'
 
 export default class StateDTO {
 
-  constructor(id, code, label) {
-    this.id = id
-    this.code = code
-    this.label = label
+  constructor(data) {
+    this.data = data
   }
 
   static build(req) {
     const {body} = req
-    const columns = ['code', 'label']
+    const keys = ['code', 'label']
+
+    validate([body], allOf(isExists, includeKey(keys), isNotAdditionalKey(keys)), CustomError.BadRequest())
+
     const {code, label} = body
+    validate([code, label], allOf(isNotEmpty, isString), CustomError.BadRequest())
 
-    if (!EveryObject(body, columns) || IsEmpty(code) || IsEmpty(label)) throw CustomError.BadRequest()
-
-    return new StateDTO(null, code, label)
+    return new StateDTO(body)
   }
 
   static state(req) {
     const {body, params} = req
-    const {id} = params
+    const keys = ['label']
+    const keysParams = ['id']
 
-    if (!TestUUID(id)) throw CustomError.BadRequest()
+    validate([body], allOf(isExists, includeKey(keys), isNotAdditionalKey(keys)), CustomError.BadRequest())
+    validate([params], allOf(isExists, includeKey(keysParams), isNotAdditionalKey(keysParams)), CustomError.BadRequest())
+    validate([params.id], isUUID, CustomError.BadRequest())
+    validate([body.label], allOf(isNotEmpty, isString), CustomError.BadRequest())
 
-    const columns = ['label']
-    const {code, label} = body
-
-    console.log(!IsEmpty(label))
-    if (!EveryObject(body, columns) || IsEmpty(label)) throw CustomError.BadRequest()
-
-    return new StateDTO(id, code, label)
+    return new StateDTO({...body, id: params.id})
   }
 }

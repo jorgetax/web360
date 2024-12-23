@@ -9,17 +9,23 @@ const mssqlErrorCodes = {
   50000: 'Malformed request',
 }
 
-export default function handleError(e, res) {
+export default function handleError(e, res, next) {
   const {code, message, number} = e
-  console.log('×   Error: %s - %s - %s', code, number, message)
 
-  if (e instanceof RequestError) {
-    return res.status(400).json({status: 400, message: mssqlErrorCodes[number] || message})
+  if (next) {
+    return next()
   }
 
   if (e instanceof CustomError) {
+    console.log('×   CustomError: %s - %s', e.status, e.message)
     return res.status(e.status).json({status: e.status, message: e.message})
   }
 
+  if (e instanceof RequestError) {
+    console.log('×   RequestError: %s - %s - %s', code, number || 'N/A', message)
+    return res.status(400).json({status: 400, message: mssqlErrorCodes[number] || message})
+  }
+
+  console.log('×   Error: %s - %s - %s', code, number, message)
   res.status(500).json({status: 500, message: 'Internal server error'})
 }

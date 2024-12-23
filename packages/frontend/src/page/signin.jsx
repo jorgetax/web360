@@ -1,9 +1,9 @@
-import './styles.css'
+import './page.css'
 import Input from '../components/ui/input'
 import Button from '../components/ui/button'
 import {useState} from 'react'
 import {IsEmpty} from '../lib/check'
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from 'react-router-dom'
 
 export default function SignIn() {
   const [form, setForm] = useState({email: '', password: ''})
@@ -34,18 +34,12 @@ export default function SignIn() {
     })
     const data = await res.json()
 
-    if (res.status !== 200) {
-      setError('Credenciales incorrectas.')
-    }
-
-    if (res.status === 500) {
-      setError('Error en el servidor.')
+    if (res.status === 200) {
+      return navigate('/')
     }
 
     setLoading(false)
     setError(JSON.stringify(data, null, 2))
-
-    return navigate('/')
   }
 
   return (

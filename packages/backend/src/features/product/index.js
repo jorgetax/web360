@@ -5,7 +5,7 @@ import ProductDTO from './product.dto.js'
 async function create(req, res) {
   try {
     const product = ProductDTO.build(req)
-    const result = await ProductService.create(product)
+    const result = await ProductService.create(product.data)
 
     res.status(201).json(result)
   } catch (e) {
@@ -26,7 +26,7 @@ async function products(req, res) {
 async function update(req, res) {
   try {
     const product = ProductDTO.product(req)
-    const result = await ProductService.update(product)
+    const result = await ProductService.update(product.data)
 
     res.status(200).json(result)
   } catch (e) {

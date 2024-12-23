@@ -1,13 +1,13 @@
 import express from 'express'
-import Product from '../features/product/index.js'
 import Authorization from '../features/auth/middleware/authorization.js'
+import Order from '../features/order/index.js'
 
 const router = express.Router()
 
 router.use(Authorization)
 
-router.post('/', Product.create)
-router.get('/', Product.products)
-router.patch('/:id', Product.update)
+router.post('/', Order.create)
+router.get('/', Order.orders)
+router.patch('/:id', Order.update)
 
 export default router

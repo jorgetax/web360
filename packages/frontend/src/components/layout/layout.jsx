@@ -12,11 +12,13 @@ export default function Layout({children}) {
   }
 
   return (
-    <>
-      <Navbar/>
-      <main>
+    <div className="layout">
+      <div>
+        <span>🚀</span>
+      </div>
+      <div>
         {children}
-      </main>
-    </>
+      </div>
+    </div>
   )
 }

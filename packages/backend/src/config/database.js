@@ -5,7 +5,7 @@ const config = {
   password: 'Password123',
   server: 'localhost',
   port: 1433,
-  database: 'master',
+  database: 'web360',
   options: {
     encrypt: true,
     trustServerCertificate: true

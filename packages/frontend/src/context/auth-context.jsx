@@ -6,7 +6,7 @@ export function useAuthContext() {
   return useContext(authContext)
 }
 
-export default function AuthProvider({children}) {
+export default function AuthContext({children}) {
   const [user, setUser] = useState(null)
 
   return (

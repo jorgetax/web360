@@ -1,12 +1,10 @@
 import {pool} from '../../config/database.js'
 
-async function signin(auth) {
+async function signin(data) {
   const database = await pool()
-  const query = 'EXEC sp.signin @email=@email, @password=@password'
   const {recordset} = await database.request()
-    .input('email', auth.email)
-    .input('password', auth.password)
-    .query(query)
+    .input('data', JSON.stringify(data))
+    .query('EXEC sp.sp_sign_in @data=@data')
   return recordset[0] ?? null
 }
 

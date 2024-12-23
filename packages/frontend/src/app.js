@@ -1,7 +1,7 @@
 import './app.css'
 import Layout from './components/layout/layout'
-import AuthProvider from './provider/auth-provider'
-import CartProvider from './provider/cart-provider'
+import AuthContext from './context/auth-context'
+import CartContext from './context/cart-context'
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import Home from './page/home'
 import SignIn from './page/signin'
@@ -9,8 +9,8 @@ import NotFound from "./page/not-found";
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
+    <AuthContext>
+      <CartContext>
         <BrowserRouter>
           <Layout>
             <Routes>
@@ -20,7 +20,7 @@ export default function App() {
             </Routes>
           </Layout>
         </BrowserRouter>
-      </CartProvider>
-    </AuthProvider>
+      </CartContext>
+    </AuthContext>
   )
 }

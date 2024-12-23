@@ -25,20 +25,44 @@ agregar productos al carrito, realizar pedidos y ver el historial de pedidos.
 .
 |-- packages
 |   |-- backend
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |-- features
-|   |   |   |-- lib
-|   |   |   |-- middleware
-|   |   |   |-- route
-|   |   |   |-- app.js
-|   |   |-- .gitignore
-|   |   |-- package.json
-|   |   |-- README.md
+|   |-- frontend
 |-- resource
 |-- |-- database.sql
 |   |-- web360.png
 |-- .gitignore 
+|-- compose.yml
+|-- package.json
 |-- LICENSE
 |-- README.md
+```
+
+## Configuración del proyecto
+
+1. Clonar el repositorio
+2. Crear la base de datos con el script `database.sql`
+
+```bash
+# clonar el repositorio
+git clone https://github.com/jorgetax/web360.git
+
+# si utiliza docker compose para crear la base de datos
+docker compose up -d
+
+# instalar dependencias
+cd packages/backend
+npm install
+
+# instalar dependencias
+cd packages/frontend
+npm install
+```
+
+## Ejecutar el proyecto
+
+```bash
+# ejecutar el backend   
+npm run backend
+
+# ejecutar el frontend
+npm run frontend
 ```

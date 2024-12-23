@@ -6,7 +6,7 @@ export function useCartContext() {
   return useContext(cartContext)
 }
 
-export default function CartProvider({children}) {
+export default function CartContext({children}) {
   const [cart, setCart] = React.useState([])
   const [cartOpen, setCartOpen] = React.useState(false)
 

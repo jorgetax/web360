@@ -1,22 +1,23 @@
 import {CustomError} from '../../lib/custom-error.js'
-import {EveryObject, IsEmpty, TestUUID} from '../../lib/check/index.js'
+import {allOf, includeKey, isEmail, isExists, isNotAdditionalKey, isNotEmpty} from '../../lib/check/index.js'
+import validate from '../../lib/validate.js'
 
 export default class AuthDto {
 
-  constructor(email, password) {
-    this.email = email
-    this.password = password
+  constructor(data) {
+    this.data = data
   }
 
   static build(req) {
     const {body} = req
-    const columns = ['email', 'password']
+    const keys = ['email', 'password']
+
+    validate([body], allOf(isExists, includeKey(keys), isNotAdditionalKey(keys)), CustomError.BadRequest())
+
     const {email, password} = body
+    validate([email, password], allOf(isNotEmpty), CustomError.BadRequest())
+    validate([body.email], isEmail, CustomError.BadRequest())
 
-    if (!EveryObject(body, columns) || IsEmpty(email) || IsEmpty(password)) {
-      throw CustomError.BadRequest()
-    }
-
-    return new AuthDto(email, password)
+    return new AuthDto(body)
   }
 }
