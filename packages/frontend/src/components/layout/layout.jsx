@@ -1,24 +1,21 @@
 import '../styles.css'
-import Navbar from './navbar'
 import {useLocation} from 'react-router-dom'
+import Sidebar from './sidebar'
+import {useAuthContext} from '../../context/auth-context-provider'
 
 export default function Layout({children}) {
+  const {isAuthenticated} = useAuthContext()
   const pathname = useLocation().pathname
-
   const publicPages = ['/signin', '/signup']
 
-  if (publicPages.includes(pathname)) {
+  if (publicPages.includes(pathname) || !isAuthenticated) {
     return <main>{children}</main>
   }
 
   return (
     <div className="layout">
-      <div>
-        <span>🚀</span>
-      </div>
-      <div>
-        {children}
-      </div>
+      <Sidebar/>
+      {children}
     </div>
   )
 }

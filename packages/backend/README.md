@@ -1,20 +1,50 @@
-## REST API
+# Backend Server
 
-| Ruta          | Descripción       | Acceso                 |
-|---------------|-------------------|------------------------|
-| /states       | Listar estados    | Administrador, Usuario |
-| /categories   | Listar categorías | Administrador, Usuario |
-| /products     | Listar productos  | Administrador, Usuario |
-| /products/:id | Obtener producto  | Administrador, Usuario |
-| /orders       | Listar órdenes    | Administrador, Usuario |
-| /orders/:id   | Obtener orden     | Administrador, Usuario |
+e-commerce backend server for the [web360](`./packages/frontend/README.md`) project.
 
-## Ejecutar el proyecto localmente
+## Technologies
 
-> Nota: Asegúrate de configurar las variables de entorno en un archivo `.env` en la raíz del proyecto.
-> Puedes encontrar un archivo de ejemplo en `.env.example`.
+- Node.js
+- Express
+- React
+- SQL Server
+
+## Features
+
+- User Authentication
+- Customer Management
+- Product Management
+- Order Management
+- Cart Management
+
+## Crud Operations
+
+| Operation | Method | Route | Description           |
+|-----------|--------|-------|-----------------------|
+| Create    | POST   | /...  | Create a new resource |
+| Read      | GET    | /...  | Get a resource        |
+| Patch     | PATCH  | /...  | Update a resource     |
+| Delete    | DELETE | /...  | Delete a resource     |
+
+## Endpoints
+
+| Route       | Description         |
+|-------------|---------------------|
+| /auth       | User Authentication |
+| /users      | Customer Management |
+| /categories | Category Management |
+| /products   | Product Management  |
+| /orders     | Order Management    |
+| /states     | State Management    |
+
+## Getting Started
+
+First, run the development server:
 
 ```bash
-npm install
 npm run dev
 ```
+
+Open [http://localhost:5000](http://localhost:5000) with your browser to see the result.
+
+
