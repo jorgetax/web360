@@ -5,9 +5,9 @@ import validate from '../../../lib/validate.js'
 import {allOf, isNotEmpty, isExists} from '../../../lib/check/index.js'
 
 export default function Authorization(req, res, next) {
-  try {
-    const {authorization} = req.headers
+  const {authorization} = req.headers
 
+  try {
     validate([authorization], allOf(isExists, isNotEmpty), CustomError.BadRequest('Authorization header is required'))
 
     const token = authorization.replace('Bearer ', '')

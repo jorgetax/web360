@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import router from './router/index.js'
+import {PORT} from './config/constant.js'
 
 const app = express()
 
@@ -15,6 +16,6 @@ app.use(function (req, res, next) {
   res.status(404).send('Not Found')
 })
 
-app.listen(5000, () => {
-  console.log(`✓ Server is running on http://localhost:5000`)
+app.listen(PORT, () => {
+  console.log(`✓ Server is running on http://localhost:${PORT}`)
 })

@@ -1,21 +1,14 @@
-import mssql from 'mssql'
+import {Sequelize} from 'sequelize'
+import {MSSQL_DATABASE, MSSQL_PASSWORD, MSSQL_PORT, MSSQL_SERVER, MSSQL_USER} from './constant.js'
 
-const config = {
-  user: 'SA',
-  password: 'Password123',
-  server: 'localhost',
-  port: 1433,
-  database: 'web360',
-  options: {
-    encrypt: true,
-    trustServerCertificate: true
-  }
-}
+const database = new Sequelize({
+  dialect: 'mssql',
+  host: MSSQL_SERVER,
+  database: MSSQL_DATABASE,
+  username: MSSQL_USER,
+  password: MSSQL_PASSWORD,
+  port: MSSQL_PORT,
+  logging: false,
+})
+export default database
 
-export async function pool() {
-  try {
-    return await mssql.connect(config)
-  } catch (e) {
-    console.log(e.message)
-  }
-}

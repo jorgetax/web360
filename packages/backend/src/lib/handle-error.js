@@ -1,5 +1,5 @@
-import {RequestError} from 'mssql/lib/base/index.js'
 import {CustomError} from './custom-error.js'
+import {RequestError} from 'tedious'
 
 const mssqlErrorCodes = {
   8114: 'Error converting data type',
@@ -10,18 +10,16 @@ const mssqlErrorCodes = {
 }
 
 export default function handleError(e, res, next) {
-  const {code, message, number} = e
+  const {code, message, number, original} = e
 
-  if (next) {
-    return next()
-  }
+  if (next) return next()
 
   if (e instanceof CustomError) {
     console.log('×   CustomError: %s - %s', e.status, e.message)
     return res.status(e.status).json({status: e.status, message: e.message})
   }
 
-  if (e instanceof RequestError) {
+  if (original instanceof RequestError) {
     console.log('×   RequestError: %s - %s - %s', code, number || 'N/A', message)
     return res.status(400).json({status: 400, message: mssqlErrorCodes[number] || message})
   }

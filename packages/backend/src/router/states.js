@@ -6,8 +6,8 @@ const router = express.Router()
 
 router.use(Authorization)
 
-router.post('/', Sate.create)
 router.get('/', Sate.states)
+router.post('/', Sate.create)
 router.patch('/:id', Sate.update)
 
 export default router

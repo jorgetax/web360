@@ -1,11 +1,12 @@
-import {pool} from '../../config/database.js'
+import database from '../../config/database.js'
+import {QueryTypes} from "sequelize"
 
 async function signin(data) {
-  const database = await pool()
-  const {recordset} = await database.request()
-    .input('data', JSON.stringify(data))
-    .query('EXEC sp.sp_sign_in @data=@data')
-  return recordset[0] ?? null
+  const records = await database.query('EXEC sp.sp_sign_in :data', {
+    type: QueryTypes.SELECT,
+    replacements: {data: JSON.stringify(data)}
+  })
+  return records[0] ?? null
 }
 
 export default {signin}

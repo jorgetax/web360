@@ -19,6 +19,11 @@
     "date-fns": "^4.1.0",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mssql": "^11.0.1"
+    "mssql": "^11.0.1",
+    "sequelize": "^6.37.5",
+    "tedious": "^18.6.1"
+  },
+  "eslintConfig": {
+    "extends": "./node_modules/standard/eslintrc.json"
   }
 }

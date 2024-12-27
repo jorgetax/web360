@@ -1,28 +1,26 @@
-import {pool} from '../../config/database.js'
+import database from '../../config/database.js'
+import {QueryTypes} from 'sequelize'
 
 async function create(category) {
-  const database = await pool()
-  const {recordset} = await database.request()
-    .input('data', JSON.stringify(category))
-    .query('EXEC sp.sp_create_category @data = @data')
+  const records = await database.query('EXEC sp.sp_create_category :data', {
+    type: QueryTypes.SELECT,
+    replacements: {data: JSON.stringify(category)}
+  })
 
-  return recordset[0] ?? null
+  return records[0] ?? null
 }
 
 async function category() {
-  const database = await pool()
-  const {recordset} = await database.request().query('SELECT * FROM vw.vw_categories')
-
-  return recordset ?? null
+  const records = await database.query('SELECT * FROM vw.vw_categories')
+  return records ?? null
 }
 
 async function update(category) {
-  const database = await pool()
-  const {recordset} = await database.request()
-    .input('data', JSON.stringify(category))
-    .query('EXEC sp.sp_update_category @data = @data')
-
-  return recordset[0] ?? null
+  const records = await database.query('EXEC sp.sp_update_category :data', {
+    type: QueryTypes.SELECT,
+    replacements: {data: JSON.stringify(category)}
+  })
+  return records[0] ?? null
 }
 
 export default {create, category, update}

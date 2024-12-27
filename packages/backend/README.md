@@ -1,12 +1,11 @@
 # Backend Server
 
-e-commerce backend server for the [web360](`./packages/frontend/README.md`) project.
+e-commerce backend server for the `commerce` project.
 
 ## Technologies
 
 - Node.js
 - Express
-- React
 - SQL Server
 
 ## Features
@@ -43,6 +42,7 @@ First, run the development server:
 
 ```bash
 npm run dev
+pnpm run dev
 ```
 
 Open [http://localhost:5000](http://localhost:5000) with your browser to see the result.

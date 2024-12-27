@@ -1,22 +1,20 @@
-import {pool} from '../../config/database.js'
+import database from '../../config/database.js'
+import {QueryTypes} from 'sequelize'
 
 async function create(user) {
-  console.log('user', user)
-  const database = await pool()
-  const {recordset} = await database.request()
-    .input('data', JSON.stringify(user))
-    .query('EXEC sp.sp_create_user @data = @data')
-
-  return recordset[0] ?? null
+  const records = await database.query('EXEC sp.sp_create_user :data', {
+    type: QueryTypes.INSERT,
+    replacements: {data: JSON.stringify(user)}
+  })
+  return records[0] ?? null
 }
 
 async function update(user) {
-  const database = await pool()
-  const {recordset} = await database.request()
-    .input('data', JSON.stringify(user))
-    .query('EXEC sp.sp_update_user @data = @data')
-
-  return recordset[0] ?? null
+  const records = await database.query('EXEC sp.sp_update_user :data', {
+    type: QueryTypes.UPDATE,
+    replacements: {data: JSON.stringify(user)}
+  })
+  return records[0] ?? null
 }
 
 export default {create, update}

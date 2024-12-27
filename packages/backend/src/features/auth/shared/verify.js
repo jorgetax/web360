@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = 'secret'
+import {JWT_SECRET} from '../../../config/constant.js'
 
 function access(hash) {
   return jwt.verify(hash, JWT_SECRET)

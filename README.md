@@ -16,7 +16,7 @@ agregar productos al carrito, realizar pedidos y ver el historial de pedidos.
 
 - [`backend`](packages/backend) backend de la aplicación.
 - [`database.sql`](resource/database.sql) script de la base de datos.
-- [`frontend`](packages/frontend) frontend de la aplicación.
+- [`commerce`](packages/commerce) frontend de la aplicación.
 
 ![](/resource/web360.png)
 
@@ -54,7 +54,7 @@ cd packages/backend
 npm install
 
 # instalar dependencias
-cd packages/frontend
+cd packages/commerce
 npm install
 ```
 
@@ -65,5 +65,5 @@ npm install
 npm run backend
 
 # ejecutar el frontend
-npm run frontend
+npm run commerce
 ```

@@ -35,6 +35,7 @@ USE web360;
 CREATE SCHEMA sp; -- stored-procedures
 CREATE SCHEMA vw; -- views
 CREATE SCHEMA system;
+
 -- system tables
 
 -- https://learn.microsoft.com/es-es/sql/t-sql/functions/openjson-transact-sql?view=sql-server-ver16
@@ -135,15 +136,15 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_update_state '{"state_uuid": "6E0FE96E-39EE-4E1E-B8FA-4CADC44E2A50", "label": "Desactivado"}';
+-- EXEC sp.sp_update_state '{"state_uuid": "6E0FE96E-39EE-4E1E-B8FA-4CADC44E2A50", "label": "Desactivado"}';
 
 CREATE OR ALTER VIEW vw.vw_states AS
 SELECT *
 FROM system.states
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code IN ('deleted', 'inactive'));
 
-SELECT *
-FROM vw.vw_states;
+-- SELECT *
+-- FROM vw.vw_states;
 
 --
 -- roles
@@ -196,20 +197,19 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_create_role '{"code": "user", "label": "Usuario", "state_uuid": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
-EXEC sp.sp_create_role
-     '{"code": "admin", "label": "Administrador", "state_uuid": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
+-- EXEC sp.sp_create_role '{"code": "user", "label": "Usuario", "state_uuid": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
+-- EXEC sp.sp_create_role'{"code": "admin", "label": "Administrador", "state_uuid": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
 
-SELECT *
-FROM system.roles
+-- SELECT *
+-- FROM system.roles
 
 CREATE OR ALTER VIEW vw.vw_roles AS
 SELECT *
 FROM system.roles
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code = 'deleted');
 
-SELECT *
-FROM vw.vw_roles;
+-- SELECT *
+-- FROM vw.vw_roles;
 
 --
 -- users
@@ -327,7 +327,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_sign_in '{"email": "hello@local.com"}';
+-- EXEC sp.sp_sign_in '{"email": "hello@local.com"}';
 
 CREATE OR ALTER PROC sp.sp_create_user @data NVARCHAR(MAX)
 AS
@@ -367,8 +367,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_create_user
-     '{"first_name": "Hello", "last_name": "World", "email": "info@localhost.com", "birth_date": "2024-02-12", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9", "password": {"hash": "123456", "salt": "123456"}}';
+-- EXEC sp.sp_create_user'{"first_name": "Hello", "last_name": "World", "email": "info@localhost.com", "birth_date": "2024-02-12", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9", "password": {"hash": "123456", "salt": "123456"}}';
 
 CREATE OR ALTER PROC sp.sp_update_user @data NVARCHAR(MAX)
 AS
@@ -399,8 +398,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_update_user
-     '{"id": "361CBC2D-A187-480E-9B2A-87B832368B94", "first_name": "Hello", "last_name": "World", "email": "local@local.com", "birth_date": "2024-02-12"}';
+-- EXEC sp.sp_update_user '{"id": "361CBC2D-A187-480E-9B2A-87B832368B94", "first_name": "Hello", "last_name": "World", "email": "local@local.com", "birth_date": "2024-02-12"}';
 
 CREATE OR ALTER PROC sp.sp_delete_user @data NVARCHAR(MAX)
 AS
@@ -425,7 +423,7 @@ BEGIN
 END
 GO;
 
-EXEC sp.sp_delete_user '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94"}';
+-- EXEC sp.sp_delete_user '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94"}';
 
 CREATE OR ALTER PROCEDURE sp.sp_update_user_state @data NVARCHAR(MAX)
 AS
@@ -450,8 +448,7 @@ BEGIN
 END
 GO;
 
-EXEC sp.sp_update_user_state
-     '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
+-- EXEC sp.sp_update_user_state'{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
 
 CREATE OR ALTER PROCEDURE sp.sp_create_customer @data NVARCHAR(MAX)
 AS
@@ -479,8 +476,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_create_customer
-     '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "customer_id": "123456", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
+-- EXEC sp.sp_create_customer'{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "customer_id": "123456", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
 
 CREATE OR ALTER PROCEDURE sp.sp_update_customer @data NVARCHAR(MAX)
 AS
@@ -509,8 +505,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_update_customer
-     '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "customer_id": "654321", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
+-- EXEC sp.sp_update_customer'{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "customer_id": "654321", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
 
 CREATE OR ALTER PROCEDURE sp.sp_delete_customer @data NVARCHAR(MAX)
 AS
@@ -535,7 +530,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_delete_customer '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94"}';
+-- EXEC sp.sp_delete_customer '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94"}';
 
 --
 -- products
@@ -579,16 +574,16 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_create_category '{"code": "rice", "label": "Arroz", "state": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
-EXEC sp.sp_create_category '{"code": "salt", "label": "Sal", "state": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
+-- EXEC sp.sp_create_category '{"code": "rice", "label": "Arroz", "state": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
+-- EXEC sp.sp_create_category '{"code": "salt", "label": "Sal", "state": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
 
 CREATE OR ALTER VIEW vw.vw_categories AS
 SELECT *
 FROM products.categories
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code = 'deleted');
 
-SELECT *
-FROM vw.vw_categories;
+-- SELECT *
+-- FROM vw.vw_categories;
 
 CREATE OR ALTER PROC sp.sp_update_category @data NVARCHAR(MAX)
 AS
@@ -614,8 +609,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_update_category
-     '{"id": "EB49A8AE-AFC2-4ACF-8E57-04CBEC0315DD", "label": "Arroz", "state": "B9436A39-18F5-4C00-B0C2-562F10BB21F9"}';
+-- EXEC sp.sp_update_category'{"id": "EB49A8AE-AFC2-4ACF-8E57-04CBEC0315DD", "label": "Arroz", "state": "B9436A39-18F5-4C00-B0C2-562F10BB21F9"}';
 
 CREATE TABLE products.products
 (
@@ -662,16 +656,15 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_create_product
-     '{"category": "EB49A8AE-AFC2-4ACF-8E57-04CBEC0315DD", "title": "Arroz", "description": "Arroz 1kg", "price": 10.50, "state": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
+-- EXEC sp.sp_create_product'{"category": "EB49A8AE-AFC2-4ACF-8E57-04CBEC0315DD", "title": "Arroz", "description": "Arroz 1kg", "price": 10.50, "state": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
 
 CREATE OR ALTER VIEW vw.vw_products AS
 SELECT *
 FROM products.products
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code = 'deleted');
 
-SELECT *
-FROM vw.vw_products;
+-- SELECT *
+-- FROM vw.vw_products;
 
 CREATE OR ALTER PROC sp.sp_update_product @data NVARCHAR(MAX)
 AS
@@ -701,8 +694,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_update_product
-     '{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "category": "9FC6FD5B-BD84-4F52-BF73-A66755B0CD0E", "title": "Sal", "description": "Sal 1kg", "price": 5.50, "sate": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
+-- EXEC sp.sp_update_product'{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "category": "9FC6FD5B-BD84-4F52-BF73-A66755B0CD0E", "title": "Sal", "description": "Sal 1kg", "price": 5.50, "sate": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
 
 CREATE OR ALTER PROC sp.sp_delete_product @data NVARCHAR(MAX)
 AS
@@ -727,7 +719,7 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_delete_product '{"product_uuid": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB"}';
+-- EXEC sp.sp_delete_product '{"product_uuid": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB"}';
 
 --
 -- orders
@@ -822,16 +814,15 @@ BEGIN
 END;
 GO;
 
-EXEC sp.sp_create_order
-     '{"user": "361CBC2D-A187-480E-9B2A-87B832368B94", "items": [{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "quantity": 2}]}';
+-- EXEC sp.sp_create_order  '{"user": "361CBC2D-A187-480E-9B2A-87B832368B94", "items": [{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "quantity": 2}]}';
 
 CREATE OR ALTER VIEW vw.vw_orders AS
 SELECT *
 FROM orders.orders
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code = 'deleted');
 
-SELECT *
-FROM vw.vw_orders;
+-- SELECT *
+-- FROM vw.vw_orders;
 
 CREATE OR ALTER PROC sp.sp_update_order @data NVARCHAR(MAX)
 AS BEGIN
@@ -872,5 +863,4 @@ AS BEGIN
 END;
 GO;
 
-EXEC sp.sp_update_order
-     '{"id": "D1D3D3A4-3D3D-4D3D-8D3D-3D3D3D3D3D3D", "state": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9", "items": [{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "quantity": 2}]}';
+-- EXEC sp.sp_update_order'{"id": "D1D3D3A4-3D3D-4D3D-8D3D-3D3D3D3D3D3D", "state": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9", "items": [{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "quantity": 2}]}';

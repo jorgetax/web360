@@ -2,10 +2,9 @@
   "name": "web360",
   "version": "1.0.0",
   "description": "[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/jorgetax/web360?tab=BSD-2-Clause-1-ov-file#readme)",
-  "workspaces": [ "packages/*"],
+  "main": "index.js",
   "scripts": {
-    "backend": "npm --prefix packages/backend run dev",
-    "frontend": "npm --prefix packages/frontend run start"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
