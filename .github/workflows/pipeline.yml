@@ -37,7 +37,7 @@ jobs:
             export NVM_DIR=~/.nvm
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ${{ secrets.WORKING_DIR }}
-            printf "Current directory: "
-            pwd
             git pull
+            cd ${{ secrets.WORKING_DIR }}/packages/commerce
+            npm run build
             pm2 restart all

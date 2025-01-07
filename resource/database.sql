@@ -109,6 +109,17 @@ EXEC sp.sp_create_state '{"code": "inactive", "label": "Inactivo"}';
 EXEC sp.sp_create_state '{"code": "deleted", "label": "Eliminado"}';
 EXEC sp.sp_create_state '{"code": "disabled", "label": "Desactivado"}';
 EXEC sp.sp_create_state '{"code": "enabled", "label": "Habilitado"}';
+EXEC sp.sp_create_state '{"code": "pending", "label": "Pendiente"}';
+EXEC sp.sp_create_state '{"code": "approved", "label": "Aprobado"}';
+EXEC sp.sp_create_state '{"code": "rejected", "label": "Rechazado"}';
+EXEC sp.sp_create_state '{"code": "completed", "label": "Completado"}';
+EXEC sp.sp_create_state '{"code": "canceled", "label": "Cancelado"}';
+EXEC sp.sp_create_state '{"code": "shipped", "label": "Enviado"}';
+EXEC sp.sp_create_state '{"code": "delivered", "label": "Entregado"}';
+EXEC sp.sp_create_state '{"code": "returned", "label": "Devuelto"}';
+EXEC sp.sp_create_state '{"code": "refunded", "label": "Reembolsado"}';
+EXEC sp.sp_create_state '{"code": "paid", "label": "Pagado"}';
+EXEC sp.sp_create_state '{"code": "unpaid", "label": "No pagado"}';
 GO;
 
 CREATE OR ALTER PROC sp.sp_update_state @data NVARCHAR(MAX)
