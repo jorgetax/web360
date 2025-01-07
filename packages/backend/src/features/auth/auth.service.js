@@ -14,4 +14,14 @@ async function signin(auth) {
   return {access_token}
 }
 
-export default {signin}
+async function signup(auth) {
+  const salt = 10
+  const hash = await bcrypt.hash(auth.password, salt)
+  const result = await AuthModel.signup({...auth, password: {hash, salt}})
+
+  if (!result) throw CustomError.BadRequest()
+
+  return result
+}
+
+export default {signin, signup}

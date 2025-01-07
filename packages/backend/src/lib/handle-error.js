@@ -11,6 +11,7 @@ const mssqlErrorCodes = {
 
 export default function handleError(e, res, next) {
   const {code, message, number, original} = e
+  console.log(e)
 
   if (next) return next()
 

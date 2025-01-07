@@ -57,13 +57,3 @@ npm install
 cd packages/commerce
 npm install
 ```
-
-## Ejecutar el proyecto
-
-```bash
-# ejecutar el backend   
-npm run backend
-
-# ejecutar el frontend
-npm run commerce
-```

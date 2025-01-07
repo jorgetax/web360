@@ -7,6 +7,6 @@
  */
 export default function isPassword(value) {
   if (value.length < 8 || value.length > 128) return false
-  const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
+  const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/ // example: Password123
   return regex.test(value)
 }

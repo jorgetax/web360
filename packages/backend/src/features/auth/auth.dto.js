@@ -20,4 +20,17 @@ export default class AuthDto {
 
     return new AuthDto(body)
   }
+
+  static user(req) {
+    const {body} = req
+    const keys = ['first_name', 'last_name', 'email', 'password', 'birth_date']
+
+    validate([body], allOf(isExists, includeKey(keys), isNotAdditionalKey(keys)), CustomError.BadRequest())
+
+    const {first_name, last_name, email, password, birth_date} = body
+    validate([first_name, last_name, email, password, birth_date], allOf(isNotEmpty), CustomError.BadRequest())
+    validate([body.email], isEmail, CustomError.BadRequest())
+
+    return new AuthDto(body)
+  }
 }

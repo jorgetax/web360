@@ -12,4 +12,14 @@ async function signin(req, res) {
   }
 }
 
-export default {signin}
+async function signup(req, res) {
+  try {
+    const auth = AuthDto.user(req)
+    const result = await AuthService.signup(auth.data)
+    res.status(2001).json(result)
+  } catch (e) {
+    handleError(e, res)
+  }
+}
+
+export default {signin, signup}

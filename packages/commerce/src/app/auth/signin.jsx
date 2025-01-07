@@ -1,38 +1,60 @@
 import '../page.css'
 import Input from '../../components/ui/input'
 import Button from '../../components/ui/button'
-import {useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {signin} from './actions'
 import {useForm} from 'react-hook-form'
 import {useAuthContext} from '../../context/auth-context-provider'
+import {object, string} from 'yup'
 
 export default function SignIn() {
-  const [state, setState] = useState({loading: false, error: null})
-  const {register, handleSubmit} = useForm()
+  const {register, handleSubmit, reset, setError, formState: {errors}} = useForm()
   const navigate = useNavigate()
   const {login} = useAuthContext()
 
-  const onSubmit = async (d) => {
-    setState({loading: true, error: null})
-    const res = await signin(d)
+  const onSubmit = async (data) => {
+    const schema = object({
+      email: string().email('Correo electrónico inválido').required('Correo electrónico requerido'),
+      password: string().required('Contraseña requerida')
+    })
+    try {
+      await schema.validate(data, {abortEarly: false})
+      const res = await signin(data)
 
-    if (res.status === 200) {
-      login(res)
-      return navigate('/')
+      if (res.status !== 200) {
+        setError('email', {type: 'manual', message: 'Credenciales inválidas'})
+        return
+      }
+
+      login(res.data)
+      navigate('/asd')
+    } catch (e) {
+      e.inner.forEach(({path, message}) => {
+        setError(path, {type: 'manual', message})
+      })
     }
-    setState({loading: false, error: res.data ? 'Usuario o contraseña incorrectos' : 'Error de conexión'})
   }
 
   return (
     <div className="page">
-      <form className="form" onSubmit={handleSubmit(onSubmit)}>
-        <Input {...register('email')} type="email" placeholder="Correo electrónico" autoComplete="email"/>
-        <Input {...register('password')} type="password" placeholder="Contraseña" autoComplete="current-password"/>
-        {state.error && <div className="error">{state.error}</div>}
-        <Link to={'/signup'}>Crear cuenta</Link>
-        <Button type="submit" disabled={state.loading}>{state.loading ? 'Cargando...' : 'Iniciar sesión'}</Button>
-      </form>
+      <main className="main">
+        <div className="form">
+          <h1>Iniciar sesión</h1>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <label>Correo electrónico</label>
+            <Input {...register('email')} type="email" placeholder="Correo electrónico" autoComplete="email"/>
+            {errors.email && <span className="error">{errors.email.message}</span>}
+            <label>Contraseña</label>
+            <Input {...register('password')} type="password" placeholder="Contraseña" autoComplete="current-password"/>
+            {errors.password && <span className="error">{errors.password.message}</span>}
+            <div className="action">
+              <Link to={'/signup/user'} className="button secondary">Crear cuenta</Link>
+              <Button type="submit"
+                      disabled={Object.keys(errors) > 0}>{Object.keys(errors) > 0 ? 'Cargando...' : 'Iniciar sesión'}</Button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   )
 }

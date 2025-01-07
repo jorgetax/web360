@@ -1,3 +1,5 @@
-export default function Button({children, ...props}) {
-  return <button {...props} className="button">{children}</button>
+import clsx from 'clsx'
+
+export default function Button(props) {
+  return <button className={clsx('button', 'primary')} {...props}/>
 }

@@ -7,6 +7,7 @@
  */
 export default function isDate(value) {
   if (typeof value !== 'string') return false
-  const format = /^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]\d{4}$/g
+  // yyyy-mm-dd
+  const format = /^\d{4}-\d{2}-\d{2}$/
   return format.test(value)
 }

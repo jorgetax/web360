@@ -4,43 +4,47 @@
 -- Gestor de base de datos: SQL Server 2022 Developer
 -- Fecha: 02/12/2024
 
---
--- drop database
-
-USE master;
-DROP DATABASE web360;
-
---
--- database
-
-CREATE DATABASE web360
+CREATE DATABASE commerce
     ON
     ( NAME = web360_data,
-        FILENAME = '/var/opt/mssql/data/web360_data.mdf',
+        FILENAME = '/var/opt/mssql/data/commerce_data.mdf',
         SIZE = 10,
         MAXSIZE = 50,
         FILEGROWTH = 5)
     LOG ON
     ( NAME = web360_log,
-        FILENAME = '/var/opt/mssql/data/web360_log.ldf',
+        FILENAME = '/var/opt/mssql/data/commerce_log.ldf',
         SIZE = 5 MB,
         MAXSIZE = 25 MB,
         FILEGROWTH = 5 MB );
+GO;
 
-USE web360;
+USE commerce;
+GO;
 
---
--- system
+CREATE SCHEMA sp;
+GO;
 
-CREATE SCHEMA sp; -- stored-procedures
-CREATE SCHEMA vw; -- views
+CREATE SCHEMA vw;
+GO;
+
 CREATE SCHEMA system;
+GO;
 
--- system tables
+CREATE SCHEMA users;
+GO;
+
+CREATE SCHEMA organizations;
+GO;
+
+CREATE SCHEMA products;
+GO;
+
+CREATE SCHEMA orders;
+GO;
 
 -- https://learn.microsoft.com/es-es/sql/t-sql/functions/openjson-transact-sql?view=sql-server-ver16
 -- openjson type: 0 = null, 1 = int, 2 = float, 3 = string, 4 = boolean, 5 = array, 6 = object
-
 CREATE OR ALTER FUNCTION system.validate_json(@data NVARCHAR(MAX))
     RETURNS BIT
 AS
@@ -52,9 +56,6 @@ BEGIN
 END;
 GO;
 
---
--- states
-
 CREATE TABLE system.states
 (
     state_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -64,6 +65,7 @@ CREATE TABLE system.states
     created_at DATETIME     NOT NULL        DEFAULT GETDATE(),
     updated_at DATETIME     NOT NULL        DEFAULT GETDATE()
 );
+GO;
 
 CREATE OR ALTER TRIGGER system.trg_states_updated_at
     ON system.states
@@ -75,10 +77,6 @@ BEGIN
     WHERE state_uuid IN (SELECT state_uuid FROM DELETED);
 END;
 GO;
-
--- stored-procedures: https://learn.microsoft.com/es-es/sql/relational-databases/stored-procedures/stored-procedures-database-engine?view=sql-server-ver16
--- json: https://learn.microsoft.com/en-us/sql/relational-databases/json/validate-query-and-change-json-data-with-built-in-functions-sql-server?view=sql-server-ver16
--- https://learn.microsoft.com/es-es/sql/t-sql/language-elements/declare-cursor-transact-sql?view=sql-server-ver16
 
 CREATE OR ALTER PROC sp.sp_create_state @data NVARCHAR(MAX)
 AS
@@ -111,6 +109,7 @@ EXEC sp.sp_create_state '{"code": "inactive", "label": "Inactivo"}';
 EXEC sp.sp_create_state '{"code": "deleted", "label": "Eliminado"}';
 EXEC sp.sp_create_state '{"code": "disabled", "label": "Desactivado"}';
 EXEC sp.sp_create_state '{"code": "enabled", "label": "Habilitado"}';
+GO;
 
 CREATE OR ALTER PROC sp.sp_update_state @data NVARCHAR(MAX)
 AS
@@ -136,18 +135,11 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_update_state '{"state_uuid": "6E0FE96E-39EE-4E1E-B8FA-4CADC44E2A50", "label": "Desactivado"}';
-
 CREATE OR ALTER VIEW vw.vw_states AS
 SELECT *
 FROM system.states
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code IN ('deleted', 'inactive'));
-
--- SELECT *
--- FROM vw.vw_states;
-
---
--- roles
+GO;
 
 CREATE TABLE system.roles
 (
@@ -159,6 +151,7 @@ CREATE TABLE system.roles
     created_at DATETIME         NOT NULL    DEFAULT GETDATE(),
     updated_at DATETIME         NOT NULL    DEFAULT GETDATE()
 );
+GO;
 
 CREATE OR ALTER TRIGGER system.trg_roles_updated_at
     ON system.roles
@@ -183,8 +176,10 @@ BEGIN
 
         INSERT INTO system.roles (code, label, state_uuid)
         OUTPUT INSERTED.role_uuid INTO @InsertedRows
-        SELECT *
-        FROM OPENJSON(@data) WITH (code NVARCHAR(50), label NVARCHAR(50), state_uuid UNIQUEIDENTIFIER);
+        SELECT r.code, r.label, s.state_uuid
+        FROM OPENJSON(@data) WITH (code NVARCHAR(50), label NVARCHAR(50)) AS r,
+             system.states s
+        WHERE s.code = 'active';
 
         COMMIT;
 
@@ -197,24 +192,16 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_create_role '{"code": "user", "label": "Usuario", "state_uuid": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
--- EXEC sp.sp_create_role'{"code": "admin", "label": "Administrador", "state_uuid": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
-
--- SELECT *
--- FROM system.roles
+EXEC sp.sp_create_role '{"code": "admin", "label": "Administrador"}';
+EXEC sp.sp_create_role '{"code": "customer", "label": "Cliente"}';
+EXEC sp.sp_create_role '{"code": "seller", "label": "Vendedor"}';
+GO;
 
 CREATE OR ALTER VIEW vw.vw_roles AS
 SELECT *
 FROM system.roles
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code = 'deleted');
-
--- SELECT *
--- FROM vw.vw_roles;
-
---
--- users
-
-CREATE SCHEMA users;
+GO;
 
 CREATE TABLE users.users
 (
@@ -228,6 +215,7 @@ CREATE TABLE users.users
     created_at DATETIME         NOT NULL    DEFAULT GETDATE(),
     updated_at DATETIME         NOT NULL    DEFAULT GETDATE()
 );
+GO;
 
 CREATE OR ALTER TRIGGER users.trg_users_updated_at
     ON users.users
@@ -250,6 +238,7 @@ CREATE TABLE users.passwords
     updated_at      DATETIME         NOT NULL    DEFAULT GETDATE(),
     CONSTRAINT uc_user_password UNIQUE (user_uuid)
 );
+GO;
 
 CREATE OR ALTER TRIGGER users.trg_passwords_updated_at
     ON users.passwords
@@ -272,6 +261,7 @@ CREATE TABLE users.users_roles
     updated_at     DATETIME         NOT NULL    DEFAULT GETDATE(),
     CONSTRAINT uc_user_role UNIQUE (user_uuid, role_uuid)
 );
+GO;
 
 CREATE OR ALTER TRIGGER users.trg_users_roles_updated_at
     ON users.users_roles
@@ -284,25 +274,109 @@ BEGIN
 END;
 GO;
 
-CREATE TABLE users.customers
+CREATE TABLE organizations.organizations
 (
-    customer_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    user_uuid     UNIQUEIDENTIFIER NOT NULL UNIQUE REFERENCES users.users (user_uuid) ON DELETE NO ACTION,
-    customer_id   NVARCHAR(50)     NOT NULL UNIQUE CHECK (LEN(customer_id) > 0),
-    state_uuid    UNIQUEIDENTIFIER NOT NULL REFERENCES system.states (state_uuid) ON DELETE NO ACTION,
-    deleted_at    DATETIME,
-    created_at    DATETIME         NOT NULL    DEFAULT GETDATE(),
-    updated_at    DATETIME         NOT NULL    DEFAULT GETDATE(),
+    organization_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    name              NVARCHAR(50)     NOT NULL,
+    description       NVARCHAR(255)    NOT NULL,
+    state_uuid        UNIQUEIDENTIFIER NOT NULL REFERENCES system.states (state_uuid) ON DELETE NO ACTION,
+    deleted_at        DATETIME,
+    created_at        DATETIME         NOT NULL    DEFAULT GETDATE(),
+    updated_at        DATETIME         NOT NULL    DEFAULT GETDATE()
 );
+GO;
 
-CREATE OR ALTER TRIGGER users.trg_customers_updated_at
-    ON users.customers
+CREATE OR ALTER TRIGGER organizations.trg_organizations_updated_at
+    ON organizations.organizations
     AFTER UPDATE
     AS
 BEGIN
-    UPDATE users.customers
+    UPDATE organizations.organizations
     SET updated_at = GETDATE()
-    WHERE customer_uuid IN (SELECT customer_uuid FROM DELETED);
+    WHERE organization_uuid IN (SELECT organization_uuid FROM DELETED);
+END;
+GO;
+
+CREATE TABLE organizations.organization_users
+(
+    organization_user_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    organization_uuid       UNIQUEIDENTIFIER NOT NULL REFERENCES organizations.organizations (organization_uuid) ON DELETE CASCADE,
+    user_uuid               UNIQUEIDENTIFIER NOT NULL REFERENCES users.users (user_uuid) ON DELETE CASCADE,
+    state_uuid              UNIQUEIDENTIFIER NOT NULL REFERENCES system.states (state_uuid) ON DELETE NO ACTION,
+    deleted_at              DATETIME,
+    created_at              DATETIME         NOT NULL    DEFAULT GETDATE(),
+    updated_at              DATETIME         NOT NULL    DEFAULT GETDATE(),
+    CONSTRAINT uc_organization_user UNIQUE (organization_uuid, user_uuid)
+);
+GO;
+
+CREATE OR ALTER TRIGGER organizations.trg_organization_users_updated_at
+    ON organizations.organization_users
+    AFTER UPDATE
+    AS
+BEGIN
+    UPDATE organizations.organization_users
+    SET updated_at = GETDATE()
+    WHERE organization_user_uuid IN (SELECT organization_user_uuid FROM DELETED);
+END;
+GO;
+
+CREATE OR ALTER PROC sp.sp_create_organization @data NVARCHAR(MAX)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF system.validate_json(@data) = 0 RAISERROR ('Invalid JSON', 16, 1);
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        DECLARE @InsertedRows TABLE(organization_uuid UNIQUEIDENTIFIER);
+
+        INSERT INTO organizations.organizations (name, description, state_uuid)
+        OUTPUT INSERTED.organization_uuid INTO @InsertedRows
+        SELECT o.name, o.description, s.state_uuid
+        FROM OPENJSON(@data) WITH (name NVARCHAR(50), description NVARCHAR(255)) o
+                 JOIN system.states s ON s.code = 'active';
+
+        DECLARE @user NVARCHAR(MAX) = JSON_QUERY(@data, '$[0].user');
+        DECLARE @InsertedUserRows TABLE(user_uuid UNIQUEIDENTIFIER);
+
+        INSERT INTO users.users (first_name, last_name, email, birth_date, state_uuid)
+        OUTPUT INSERTED.user_uuid INTO @InsertedUserRows
+        SELECT first_name, last_name, email, birth_date, s.state_uuid
+        FROM OPENJSON(@user) WITH (
+            first_name NVARCHAR(50),
+            last_name NVARCHAR(50),
+            email NVARCHAR(100),
+            birth_date DATE ,
+            state UNIQUEIDENTIFIER), system.states s
+        WHERE s.code = 'active';
+
+        DECLARE @password NVARCHAR(MAX) = JSON_QUERY(@data, '$[0].password');
+
+        INSERT INTO users.passwords (user_uuid, hash, salt)
+        SELECT user_uuid, hash, salt
+        FROM @InsertedUserRows, OPENJSON(@password) WITH (hash NVARCHAR(100), salt NVARCHAR(100));
+
+        INSERT INTO users.users_roles (user_uuid, role_uuid)
+        SELECT user_uuid, role_uuid
+        FROM @InsertedUserRows, system.roles
+        WHERE code = 'admin';
+
+        INSERT INTO organizations.organization_users (organization_uuid, user_uuid, state_uuid)
+        SELECT organization_uuid, user_uuid, state_uuid
+        FROM @InsertedRows, @InsertedUserRows, system.states
+        WHERE code = 'active';
+
+        COMMIT;
+
+        SELECT organization_user_uuid as id
+        FROM organizations.organization_users
+        WHERE organization_uuid = (SELECT organization_uuid FROM @InsertedRows);
+    END TRY
+    BEGIN CATCH
+        ROLLBACK;
+        THROW;
+    END CATCH;
 END;
 GO;
 
@@ -327,8 +401,6 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_sign_in '{"email": "hello@local.com"}';
-
 CREATE OR ALTER PROC sp.sp_create_user @data NVARCHAR(MAX)
 AS
 BEGIN
@@ -341,20 +413,23 @@ BEGIN
 
         INSERT INTO users.users (first_name, last_name, email, birth_date, state_uuid)
         OUTPUT INSERTED.user_uuid INTO @InsertedRows
-        SELECT *
+        SELECT first_name, last_name, email, birth_date, s.state_uuid
         FROM OPENJSON(@data) WITH (
             first_name NVARCHAR(50),
             last_name NVARCHAR(50),
             email NVARCHAR(100),
-            birth_date DATE ,
-            state UNIQUEIDENTIFIER);
+            birth_date DATE)
+                 JOIN system.states s ON s.code = 'active';
 
         INSERT INTO users.passwords (user_uuid, hash, salt)
         VALUES ((SELECT user_uuid FROM @InsertedRows), JSON_VALUE(@data, '$.password.hash'),
                 JSON_VALUE(@data, '$.password.salt'));
 
         INSERT INTO users.users_roles (user_uuid, role_uuid)
-        VALUES ((SELECT user_uuid FROM @InsertedRows), (SELECT role_uuid FROM system.roles WHERE code = 'user'));
+        SELECT user_uuid, role_uuid
+        FROM @InsertedRows, system.roles
+        WHERE code = JSON_VALUE(@data, '$.role')
+          AND JSON_VALUE(@data, '$.role') NOT IN ('admin');
 
         COMMIT;
 
@@ -366,8 +441,6 @@ BEGIN
     END CATCH;
 END;
 GO;
-
--- EXEC sp.sp_create_user'{"first_name": "Hello", "last_name": "World", "email": "info@localhost.com", "birth_date": "2024-02-12", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9", "password": {"hash": "123456", "salt": "123456"}}';
 
 CREATE OR ALTER PROC sp.sp_update_user @data NVARCHAR(MAX)
 AS
@@ -398,8 +471,6 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_update_user '{"id": "361CBC2D-A187-480E-9B2A-87B832368B94", "first_name": "Hello", "last_name": "World", "email": "local@local.com", "birth_date": "2024-02-12"}';
-
 CREATE OR ALTER PROC sp.sp_delete_user @data NVARCHAR(MAX)
 AS
 BEGIN
@@ -422,8 +493,6 @@ BEGIN
     END CATCH;
 END
 GO;
-
--- EXEC sp.sp_delete_user '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94"}';
 
 CREATE OR ALTER PROCEDURE sp.sp_update_user_state @data NVARCHAR(MAX)
 AS
@@ -448,95 +517,6 @@ BEGIN
 END
 GO;
 
--- EXEC sp.sp_update_user_state'{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
-
-CREATE OR ALTER PROCEDURE sp.sp_create_customer @data NVARCHAR(MAX)
-AS
-BEGIN
-    SET NOCOUNT ON;
-    IF system.validate_json(@data) = 0 RAISERROR ('Invalid JSON', 16, 1);
-    BEGIN TRANSACTION;
-
-    BEGIN TRY
-        DECLARE @InsertedRows TABLE(  customer_uuid UNIQUEIDENTIFIER );
-
-        INSERT INTO users.customers (user_uuid, customer_id, state_uuid)
-        OUTPUT INSERTED.customer_uuid INTO @InsertedRows
-        SELECT *
-        FROM OPENJSON(@data) WITH (user_uuid UNIQUEIDENTIFIER, customer_id NVARCHAR(50), state_uuid UNIQUEIDENTIFIER);
-
-        COMMIT;
-
-        SELECT * FROM users.customers WHERE customer_uuid = (SELECT customer_uuid FROM @InsertedRows);
-    END TRY
-    BEGIN CATCH
-        ROLLBACK;
-        THROW;
-    END CATCH;
-END;
-GO;
-
--- EXEC sp.sp_create_customer'{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "customer_id": "123456", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
-
-CREATE OR ALTER PROCEDURE sp.sp_update_customer @data NVARCHAR(MAX)
-AS
-BEGIN
-    SET NOCOUNT ON;
-    IF system.validate_json(@data) = 0 RAISERROR ('Invalid JSON', 16, 1);
-    BEGIN TRANSACTION;
-
-    BEGIN TRY
-        UPDATE users.customers
-        SET customer_id = COALESCE(JSON_VALUE(@data, '$.customer_id'), customer_id),
-            state_uuid  = COALESCE(JSON_VALUE(@data, '$.state_uuid'), state_uuid)
-        WHERE user_uuid = JSON_VALUE(@data, '$.user_uuid');
-
-        COMMIT;
-
-        SELECT c.customer_uuid, c.user_uuid, c.customer_id, s.label AS state, c.created_at, c.updated_at
-        FROM users.customers c
-                 INNER JOIN system.states s ON c.state_uuid = s.state_uuid
-        WHERE user_uuid = JSON_VALUE(@data, '$.user_uuid');
-    END TRY
-    BEGIN CATCH
-        ROLLBACK;
-        THROW;
-    END CATCH;
-END;
-GO;
-
--- EXEC sp.sp_update_customer'{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94", "customer_id": "654321", "state_uuid": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
-
-CREATE OR ALTER PROCEDURE sp.sp_delete_customer @data NVARCHAR(MAX)
-AS
-BEGIN
-    SET NOCOUNT ON;
-    IF system.validate_json(@data) = 0 RAISERROR ('Invalid JSON', 16, 1);
-    BEGIN TRANSACTION;
-
-    BEGIN TRY
-        UPDATE users.customers
-        SET state_uuid = (SELECT state_uuid FROM system.states WHERE code = 'deleted')
-        WHERE user_uuid = JSON_VALUE(@data, '$.user_uuid')
-          AND state_uuid = (SELECT state_uuid FROM system.states WHERE code = 'active');
-
-        COMMIT;
-        SELECT 'deleted' AS status;
-    END TRY
-    BEGIN CATCH
-        ROLLBACK;
-        THROW;
-    END CATCH;
-END;
-GO;
-
--- EXEC sp.sp_delete_customer '{"user_uuid": "361CBC2D-A187-480E-9B2A-87B832368B94"}';
-
---
--- products
-
-CREATE SCHEMA products;
-
 CREATE TABLE products.categories
 (
     category_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -547,6 +527,7 @@ CREATE TABLE products.categories
     created_at    DATETIME         NOT NULL    DEFAULT GETDATE(),
     updated_at    DATETIME         NOT NULL    DEFAULT GETDATE()
 );
+GO;
 
 CREATE OR ALTER PROC sp.sp_create_category @data NVARCHAR(MAX)
 AS
@@ -574,16 +555,11 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_create_category '{"code": "rice", "label": "Arroz", "state": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
--- EXEC sp.sp_create_category '{"code": "salt", "label": "Sal", "state": "E7633767-F1E3-4021-8487-CF9CD9AC2468"}';
-
 CREATE OR ALTER VIEW vw.vw_categories AS
 SELECT *
 FROM products.categories
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code = 'deleted');
-
--- SELECT *
--- FROM vw.vw_categories;
+GO;
 
 CREATE OR ALTER PROC sp.sp_update_category @data NVARCHAR(MAX)
 AS
@@ -609,8 +585,6 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_update_category'{"id": "EB49A8AE-AFC2-4ACF-8E57-04CBEC0315DD", "label": "Arroz", "state": "B9436A39-18F5-4C00-B0C2-562F10BB21F9"}';
-
 CREATE TABLE products.products
 (
     product_uuid  UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -624,6 +598,7 @@ CREATE TABLE products.products
     created_at    DATETIME         NOT NULL    DEFAULT GETDATE(),
     updated_at    DATETIME         NOT NULL    DEFAULT GETDATE()
 );
+GO;
 
 CREATE OR ALTER PROC sp.sp_create_product @data NVARCHAR(MAX)
 AS
@@ -656,15 +631,11 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_create_product'{"category": "EB49A8AE-AFC2-4ACF-8E57-04CBEC0315DD", "title": "Arroz", "description": "Arroz 1kg", "price": 10.50, "state": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
-
 CREATE OR ALTER VIEW vw.vw_products AS
 SELECT *
 FROM products.products
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code = 'deleted');
-
--- SELECT *
--- FROM vw.vw_products;
+GO;
 
 CREATE OR ALTER PROC sp.sp_update_product @data NVARCHAR(MAX)
 AS
@@ -694,8 +665,6 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_update_product'{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "category": "9FC6FD5B-BD84-4F52-BF73-A66755B0CD0E", "title": "Sal", "description": "Sal 1kg", "price": 5.50, "sate": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9"}';
-
 CREATE OR ALTER PROC sp.sp_delete_product @data NVARCHAR(MAX)
 AS
 BEGIN
@@ -719,13 +688,6 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_delete_product '{"product_uuid": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB"}';
-
---
--- orders
-
-CREATE SCHEMA orders;
-
 CREATE TABLE orders.orders
 (
     order_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -737,6 +699,7 @@ CREATE TABLE orders.orders
     created_at DATETIME         NOT NULL    DEFAULT GETDATE(),
     updated_at DATETIME         NOT NULL    DEFAULT GETDATE()
 );
+GO;
 
 CREATE OR ALTER TRIGGER orders.trg_orders_updated_at
     ON orders.orders
@@ -761,6 +724,7 @@ CREATE TABLE orders.order_items
     created_at      DATETIME         NOT NULL    DEFAULT GETDATE(),
     updated_at      DATETIME         NOT NULL    DEFAULT GETDATE()
 );
+GO;
 
 CREATE OR ALTER TRIGGER orders.trg_order_items_updated_at
     ON orders.order_items
@@ -814,15 +778,11 @@ BEGIN
 END;
 GO;
 
--- EXEC sp.sp_create_order  '{"user": "361CBC2D-A187-480E-9B2A-87B832368B94", "items": [{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "quantity": 2}]}';
-
 CREATE OR ALTER VIEW vw.vw_orders AS
 SELECT *
 FROM orders.orders
 WHERE state_uuid NOT IN (SELECT state_uuid FROM system.states WHERE code = 'deleted');
-
--- SELECT *
--- FROM vw.vw_orders;
+GO;
 
 CREATE OR ALTER PROC sp.sp_update_order @data NVARCHAR(MAX)
 AS BEGIN
@@ -862,5 +822,3 @@ AS BEGIN
     END CATCH;
 END;
 GO;
-
--- EXEC sp.sp_update_order'{"id": "D1D3D3A4-3D3D-4D3D-8D3D-3D3D3D3D3D3D", "state": "51ADB114-CC6C-4A72-AD42-F8B53E2D62A9", "items": [{"id": "05CF9CF8-A548-4FE3-9F9C-0FB73E7929BB", "quantity": 2}]}';

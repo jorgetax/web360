@@ -1,13 +1,6 @@
 import React, {useState, useContext, useCallback, useMemo} from 'react'
 
-const AuthContext = React.createContext({
-  login: (tokens) => {
-  },
-  logout: () => {
-  },
-  isAuthenticated: false,
-  tokens: null,
-})
+const AuthContext = React.createContext()
 
 export function useAuthContext() {
   return useContext(AuthContext)

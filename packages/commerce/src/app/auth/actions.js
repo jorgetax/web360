@@ -11,13 +11,3 @@ export async function signin(form) {
     body: JSON.stringify(form),
   })
 }
-
-export async function signup(form) {
-  return fetched(new URL('/auth/signup', BASE_URL), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(form),
-  })
-}
