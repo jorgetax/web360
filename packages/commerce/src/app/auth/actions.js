@@ -1,3 +1,4 @@
+'use server'
 import fetched from '../../lib/fetched'
 import {BACKEND_URL} from '../../config/constant'
 
