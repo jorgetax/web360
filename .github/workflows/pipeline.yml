@@ -37,27 +37,13 @@ jobs:
             export NVM_DIR=~/.nvm
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ${{ secrets.WORKING_DIR }}
-            if [ ! -d ".git" ]; then
-              git clone https://github.com/jorgetax/web360.git .
-              cd packages/backend
-              npm i
-              npm run build
-              pm2 start --name "blackened-360" npm -- start
-              cd ../..
-              cd packages/commerce
-              npm i
-              npm run build
-              pm2 start --name "frontend-360" npm -- start
-            else
-              git pull
-            fi
-            cd packages/backend
+            git pull
+            cd ${{ secrets.WORKING_DIR }}/packages/backend
             npm i
             rm -rf dist
             npm run build
             pm2 restart "blackened-360"
-            cd ../..
-            cd packages/commerce
+            cd ${{ secrets.WORKING_DIR }}/packages/commerce
             npm i
             rm -rf build
             npm run build
