@@ -40,8 +40,6 @@ jobs:
             git pull
             cd ${{ secrets.WORKING_DIR }}/packages/backend
             npm i
-            rm -rf dist
-            npm run build
             pm2 restart "blackened-360"
             cd ${{ secrets.WORKING_DIR }}/packages/commerce
             npm i
