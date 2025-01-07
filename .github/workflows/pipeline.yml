@@ -37,12 +37,7 @@ jobs:
             export NVM_DIR=~/.nvm
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ${{ secrets.WORKING_DIR }}
+            printf "Current directory: "
+            pwd
             git pull
-            cd ${{ secrets.WORKING_DIR }}/packages/backend
-            npm i
-            pm2 restart "blackened-360"
-            cd ${{ secrets.WORKING_DIR }}/packages/commerce
-            npm i
-            rm -rf build
-            npm run build
-            pm2 restart "frontend-360"
+            pm2 restart all

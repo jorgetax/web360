@@ -3,6 +3,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     hostname: mssql
     restart: always
+    user: root
     ports:
       - "1433:1433"
     environment:
@@ -10,6 +11,6 @@ services:
       SA_PASSWORD: "Password123"
       MSSQL_PID: "Developer"
     volumes:
-      - ./.mssql:/var/opt/mssql/data
-      - ./.mssql:/var/opt/mssql/log
-      - ./.mssql:/var/opt/mssql/secrets
+      - ./mssql/data:/var/opt/mssql/data
+      - ./mssql/log:/var/opt/mssql/log
+      - ./mssql/secrets:/var/opt/mssql/secrets
