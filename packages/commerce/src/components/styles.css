@@ -23,6 +23,9 @@
   }
 
   & .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     padding: 0 0.5rem;
   }
 
@@ -64,6 +67,7 @@
 .wrapper {
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .icon {

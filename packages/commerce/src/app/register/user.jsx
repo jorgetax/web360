@@ -13,7 +13,7 @@ export default function User({current, steps}) {
   const {register, handleSubmit, reset, setError, formState: {errors}} = useForm()
 
   useEffect(() => {
-    if (!state.company && steps > 2) navigate('/register/company')
+    if (!state.company && steps > 2) navigate('/organization')
   }, [state.company, steps, navigate])
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function User({current, steps}) {
     try {
       await user.validate(data, {abortEarly: false})
       dispatch({type: 'SET_USER', data})
-      navigate(steps > 2 ? '/register/credential' : '/signup/credential')
+      navigate(steps > 2 ? '/organization/credential' : '/signup/credential')
     } catch (e) {
       e.inner.forEach(({path, message}) => {
         if (path === 'birth_date') return setError(path, {

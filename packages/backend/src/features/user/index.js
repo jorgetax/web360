@@ -12,6 +12,16 @@ async function create(req, res) {
   }
 }
 
+async function find(req, res) {
+  try {
+    const user = UserDto.account(req)
+    const result = await UserService.find(user.data)
+    res.status(200).json(result)
+  } catch (e) {
+    handleError(e, res)
+  }
+}
+
 async function update(req, res) {
   try {
     const user = UserDto.user(req)
@@ -22,4 +32,4 @@ async function update(req, res) {
   }
 }
 
-export default {create, update}
+export default {create, find, update}

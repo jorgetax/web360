@@ -12,7 +12,7 @@ export async function signup(form) {
 }
 
 export async function organization(form) {
-  return fetched(new URL('/api/organization', BACKEND_URL), {
+  return fetched(new URL('/organization', BACKEND_URL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

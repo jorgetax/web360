@@ -1,8 +1,8 @@
 import '../styles.css'
-import {Outlet} from 'react-router-dom'
 import AuthContextProvider from '../../context/auth-context-provider'
+import {Outlet} from "react-router-dom";
 
-export default function Layout() {
+export default function RouteWithProvider() {
   return (
     <AuthContextProvider>
       <Outlet/>

@@ -1,12 +1,18 @@
 import './page.css'
-import {Link} from 'react-router-dom'
+import {Link, Navigate} from 'react-router-dom'
 import GithubIcon from '../components/icon/github-icon'
 import ProductIcon from '../components/icon/product-icon'
 import GroupIcon from '../components/icon/group-icon'
 import ListIcon from '../components/icon/list-icon'
 import CategoryIcon from '../components/icon/category-icon'
+import {useAuthContext} from "../context/auth-context-provider"
 
 export default function Home() {
+  const {isAuthenticated, profile} = useAuthContext()
+
+  if (isAuthenticated) {
+    return <Navigate to={'/dashboard'}/>
+  }
 
   return (
     <div className="page">
@@ -33,7 +39,7 @@ export default function Home() {
           </div>
         </div>
         <div className="action">
-          <Link to="/register/organization" className="button primary">Comenzar</Link>
+          <Link to="/organization" className="button primary">Comenzar</Link>
           <Link to="/signin" className="button secondary">Iniciar sesión</Link>
         </div>
       </main>

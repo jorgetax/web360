@@ -15,9 +15,9 @@ export default function Credential({current, steps}) {
 
   useEffect(() => {
     if (!state.user && steps > 2) {
-      navigate('/register/company')
+      navigate('/organization')
     } else if (!state.user) {
-      navigate('/signup/user')
+      navigate('/signup')
     }
   }, [state.user, steps, navigate])
 

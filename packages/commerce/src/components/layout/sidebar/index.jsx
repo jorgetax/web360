@@ -5,6 +5,7 @@ import GroupIcon from '../../icon/group-icon'
 import SupervisorAccount from '../../icon/supervisor-account-icon'
 import ListIcon from '../../icon/list-icon'
 import HomeIcon from '../../icon/home-icon'
+import Logout from "../../../app/logout";
 
 const menu = [
   {name: 'Inicio', path: '/', icon: <HomeIcon/>},
@@ -37,6 +38,14 @@ export default function Sidebar() {
             </li>
           ))}
         </ul>
+        <div className="action">
+          <Link to="/logout" className="button secondary">
+            <div className="wrapper">
+              <SupervisorAccount/>
+              <span>Salir</span>
+            </div>
+          </Link>
+        </div>
       </div>
       <div className="footer">
         <p>Todos los derechos reservados</p>

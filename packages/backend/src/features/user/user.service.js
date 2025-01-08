@@ -12,6 +12,14 @@ async function create(user) {
   return result
 }
 
+async function find(user) {
+  const result = await UserModel.find(user)
+
+  if (!result) throw CustomError.NotFound()
+
+  return result
+}
+
 async function update(user) {
   const result = await UserModel.update(user)
 
@@ -20,4 +28,4 @@ async function update(user) {
   return result
 }
 
-export default {create, update}
+export default {create, find, update}

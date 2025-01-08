@@ -12,8 +12,8 @@ export default function Authorization(req, res, next) {
 
     const token = authorization.replace('Bearer ', '')
     const decoded = Verify.access(token)
-
-    req.user = decoded.id
+    
+    req.user = {id: decoded.id}
 
     next()
   } catch (e) {

@@ -699,6 +699,25 @@ BEGIN
 END;
 GO;
 
+CREATE OR ALTER PROC sp.sp_find_user @data NVARCHAR(MAX)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF ISJSON(@data) = 0 RAISERROR ('Invalid JSON', 16, 1);
+
+    BEGIN
+        SELECT u.user_uuid                                                                  AS id,
+               CAST(u.first_name AS NVARCHAR(50)) + ' ' + CAST(u.last_name AS NVARCHAR(50)) AS display_name,
+               u.email
+        FROM users.users u
+                 INNER JOIN system.states s ON u.state_uuid = s.state_uuid
+                 INNER JOIN users.users_roles ur ON u.user_uuid = ur.user_uuid
+        WHERE u.user_uuid = JSON_VALUE(@data, '$.id')
+          AND s.code = 'active';
+    END
+END;
+GO;
+
 CREATE TABLE orders.orders
 (
     order_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),

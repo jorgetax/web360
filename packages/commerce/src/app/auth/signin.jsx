@@ -1,7 +1,7 @@
 import '../page.css'
 import Input from '../../components/ui/input'
 import Button from '../../components/ui/button'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, Navigate, useNavigate} from 'react-router-dom'
 import {signin} from './actions'
 import {useForm} from 'react-hook-form'
 import {useAuthContext} from '../../context/auth-context-provider'
@@ -27,7 +27,7 @@ export default function SignIn() {
       }
 
       login(res.data)
-      navigate('/asd')
+      navigate('/dashboard')
     } catch (e) {
       e.inner.forEach(({path, message}) => {
         setError(path, {type: 'manual', message})

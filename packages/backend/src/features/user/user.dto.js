@@ -35,6 +35,15 @@ export default class UserDto {
     return new UserDto(body)
   }
 
+  static account(req) {
+    const {user} = req
+    const keys = ['id']
+
+    validate([user], allOf(isExists, includeKey(keys), isNotAdditionalKey(keys)), CustomError.BadRequest())
+
+    return new UserDto(user)
+  }
+
   static user(req) {
     const {body, params} = req
     const keys = ['first_name', 'last_name', 'birth_date']

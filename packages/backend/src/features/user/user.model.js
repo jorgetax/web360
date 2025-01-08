@@ -9,6 +9,14 @@ async function create(user) {
   return records[0] ?? null
 }
 
+async function find(user) {
+  const records = await database.query('EXEC sp.sp_find_user :data', {
+    type: QueryTypes.SELECT,
+    replacements: {data: JSON.stringify(user)}
+  })
+  return records[0] ?? null
+}
+
 async function update(user) {
   const records = await database.query('EXEC sp.sp_update_user :data', {
     type: QueryTypes.UPDATE,
@@ -17,4 +25,4 @@ async function update(user) {
   return records[0] ?? null
 }
 
-export default {create, update}
+export default {create, find, update}

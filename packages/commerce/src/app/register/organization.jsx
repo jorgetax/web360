@@ -27,7 +27,7 @@ export default function Organization({current, steps}) {
     try {
       await company.validate(data, {abortEarly: false})
       dispatch({type: 'SET_COMPANY', data})
-      navigate('/register/user')
+      navigate('/organization/user')
     } catch (e) {
       e.inner.forEach(({path, message}) => {
         setError(path, {type: 'manual', message})
