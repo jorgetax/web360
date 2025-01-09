@@ -14,10 +14,11 @@ async function create(user) {
 
 async function find(user) {
   const result = await UserModel.find(user)
+  const {roles, organization} = result
 
   if (!result) throw CustomError.NotFound()
 
-  return result
+  return {...result, roles: JSON.parse(roles), organization: JSON.parse(organization)}
 }
 
 async function update(user) {

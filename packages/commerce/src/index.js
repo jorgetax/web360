@@ -3,40 +3,54 @@ import {createRoot} from 'react-dom/client'
 import './global.css'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import NotFound from './app/not-found'
-import RouteWithProvider from './components/layout/route-with-provider'
+import AuthLayout from './components/layout/auth-layout'
 import Home from './app/home'
 import Organization from './app/register/organization'
 import User from './app/register/user'
 import Credential from './app/register/credential'
 import SignIn from './app/auth/signin'
-import Dashboard from './app/dashboard/page'
-import RouteWithAuth from "./components/layout/route-with-auth";
-import RouteWithRegister from "./components/layout/route-with-register";
+import DashboardLayout from './components/layout/dashboard-layout'
+import RegisterLayout from "./components/layout/register-layout";
 import Logout from "./app/logout";
-import StorePage from "./app/store/product-page";
-import RouteWithRole from "./components/layout/route-with-role";
+import StoreLayout from "./components/layout/store-layout";
+import RoleLayout from './components/layout/role-layout'
+import CustomerPage from './app/customer/customer-page'
+import ProductPage from "./app/product/product-page";
+import OrderPage from "./app/order/order-page";
+import CategoryPage from "./app/category/category-page";
+import UserPage from "./app/user";
+import StorePage from "./app/store/store-page";
 
 const router = createBrowserRouter([
   {
-    element: <RouteWithProvider/>, children: [
+    element: <AuthLayout/>, children: [
       {path: '/', element: <Home/>},
       {
-        element: <RouteWithAuth/>, children: [
+        element: <RegisterLayout/>, children: [
+          {path: '/signin', element: <SignIn/>},
+          {path: '/organization', element: <Organization current="1" steps="3"/>},
+          {path: '/organization/user', element: <User current="2" steps="3"/>},
+          {path: '/organization/credential', element: <Credential current="3" steps="3"/>},
+          {path: '/signup/user', element: <User current="1" steps="2"/>},
+          {path: '/signup/credential', element: <Credential current="2" steps="2"/>}
+        ]
+      }, {
+        element: <RoleLayout/>, children: [
           {
-            element: <RouteWithRegister/>, children: [
-              {path: '/signin', element: <SignIn/>},
-              {path: '/organization', element: <Organization current="1" steps="3"/>},
-              {path: '/organization/user', element: <User current="2" steps="3"/>},
-              {path: '/organization/credential', element: <Credential current="3" steps="3"/>},
-              {path: '/signup/user', element: <User current="1" steps="2"/>},
-              {path: '/signup/credential', element: <Credential current="2" steps="2"/>}
-            ]
-          }, {
-            element: <RouteWithRole/>, children: [
-              {path: '/:id', element: <Dashboard/>},
+            element: <DashboardLayout/>, children: [
+              {path: '/:id', element: <div>Dashboard</div>},
+              {path: '/:id/orders', element: <OrderPage/>},
+              {path: '/:id/products', element: <ProductPage/>},
+              {path: '/:id/categories', element: <CategoryPage/>},
+              {path: '/:id/customers', element: <CustomerPage/>},
+              {path: '/:id/users', element: <UserPage/>}
             ]
           },
-          {path: '/store', element: <StorePage/>},
+          {
+            element: <StoreLayout/>, children: [
+              {path: '/store', element: <StorePage/>}
+            ]
+          },
         ]
       },
       {path: '/logout', element: <Logout/>},

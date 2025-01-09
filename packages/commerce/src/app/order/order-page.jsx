@@ -1,4 +1,4 @@
-export default function CustomerPage() {
+export default function OrderPage() {
   return (
     <div>
       <h1>Product Page</h1>

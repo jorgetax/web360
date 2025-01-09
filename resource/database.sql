@@ -528,6 +528,39 @@ BEGIN
 END
 GO;
 
+-- find user by id
+CREATE OR ALTER PROC sp.sp_find_user @data NVARCHAR(MAX)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF system.validate_json(@data) = 0 RAISERROR ('Invalid JSON', 16, 1);
+
+    BEGIN
+        SELECT u.user_uuid                                                                  AS id,
+               CAST(u.first_name AS NVARCHAR(50)) + ' ' + CAST(u.last_name AS NVARCHAR(50)) AS display_name,
+               u.email,
+               (SELECT r.code, r.label
+                FROM users.users_roles ur
+                         INNER JOIN system.roles r ON ur.role_uuid = r.role_uuid
+                WHERE ur.user_uuid = u.user_uuid
+                  AND ur.deleted_at IS NULL
+                FOR JSON PATH)                                                              AS roles,
+               (SELECT o.organization_uuid AS id, o.name, o.description
+                FROM organizations.organization_users ou
+                         INNER JOIN organizations.organizations o ON ou.organization_uuid = o.organization_uuid
+                WHERE ou.user_uuid = u.user_uuid
+                  AND ou.deleted_at IS NULL
+                  AND ou.state_uuid = (SELECT state_uuid FROM system.states WHERE code = 'active')
+                FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)                                       AS organization
+        FROM users.users u
+                 JOIN system.states s ON u.state_uuid = s.state_uuid
+        WHERE u.user_uuid = JSON_VALUE(@data, '$.id')
+          AND s.code = 'active'
+          AND u.deleted_at IS NULL;
+    END
+END;
+GO;
+
 CREATE TABLE products.categories
 (
     category_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -696,25 +729,6 @@ BEGIN
         ROLLBACK;
         THROW;
     END CATCH;
-END;
-GO;
-
-CREATE OR ALTER PROC sp.sp_find_user @data NVARCHAR(MAX)
-AS
-BEGIN
-    SET NOCOUNT ON;
-    IF ISJSON(@data) = 0 RAISERROR ('Invalid JSON', 16, 1);
-
-    BEGIN
-        SELECT u.user_uuid                                                                  AS id,
-               CAST(u.first_name AS NVARCHAR(50)) + ' ' + CAST(u.last_name AS NVARCHAR(50)) AS display_name,
-               u.email
-        FROM users.users u
-                 INNER JOIN system.states s ON u.state_uuid = s.state_uuid
-                 INNER JOIN users.users_roles ur ON u.user_uuid = ur.user_uuid
-        WHERE u.user_uuid = JSON_VALUE(@data, '$.id')
-          AND s.code = 'active';
-    END
 END;
 GO;
 

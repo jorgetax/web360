@@ -8,10 +8,12 @@ import CategoryIcon from '../components/icon/category-icon'
 import {useAuthContext} from "../context/auth-context-provider"
 
 export default function Home() {
-  const {isAuthenticated, profile} = useAuthContext()
+  const {isAuthenticated, loading, profile} = useAuthContext()
 
-  if (isAuthenticated) {
-    return <Navigate to={'/dashboard'}/>
+  if (loading) return <div>Loading...</div>
+  if (isAuthenticated && profile) {
+    const {organization} = profile
+    return <Navigate to={organization ? `/${organization.id}` : '/store'}/>
   }
 
   return (
