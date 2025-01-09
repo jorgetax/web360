@@ -19,9 +19,7 @@ export default function DashboardLayout() {
   return (
     <div className="layout">
       <Sidebar/>
-      <div>
-        <Outlet/>
-      </div>
+      <Outlet/>
     </div>
   )
 }

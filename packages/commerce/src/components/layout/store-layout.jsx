@@ -1,21 +1,33 @@
 import CartContextProvider from "../../context/cart-context-provider";
-import {Outlet} from "react-router-dom";
-import GithubIcon from "../icon/github-icon";
+import {Link, Outlet} from "react-router-dom";
+import SupervisorAccount from "../icon/supervisor-account-icon";
+import CartIcon from "../icon/cart-icon";
 
 export default function StoreLayout() {
   return (
     <CartContextProvider>
       <div className="page">
         <div className="header">
-          <a href="https://github.com/jorgetax/web360.git" target="_blank">
-            <GithubIcon/>
-            <span>Ver en Github →</span>
-          </a>
+          <h1>Store</h1>
+          <div className="action">
+            <Link to="/logout" className="button secondary">
+              <div className="wrapper">
+                <SupervisorAccount/>
+                <span>Salir</span>
+              </div>
+            </Link>
+            <Link to="/store" className="button primary">
+              <div className="wrapper">
+                <CartIcon/>
+                <span>Carrito</span>
+              </div>
+            </Link>
+          </div>
         </div>
         <main className="main">
           <Outlet/>
         </main>
       </div>
     </CartContextProvider>
-  );
+  )
 }

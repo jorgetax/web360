@@ -10,7 +10,8 @@ import {useAuthContext} from "../context/auth-context-provider"
 export default function Home() {
   const {isAuthenticated, loading, profile} = useAuthContext()
 
-  if (loading) return <div>Loading...</div>
+  if (isAuthenticated && loading) return <div>Loading...</div>
+
   if (isAuthenticated && profile) {
     const {organization} = profile
     return <Navigate to={organization ? `/${organization.id}` : '/store'}/>

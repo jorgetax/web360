@@ -6,6 +6,6 @@ export default function Logout() {
 
   if (isAuthenticated) {
     logout()
-    return <Navigate to={'/dashboard'}/>
+    return <Navigate to={'/'}/>
   }
 }
